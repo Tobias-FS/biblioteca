@@ -1,0 +1,23 @@
+{
+    "name": "tobias/biblioteca",
+    "autoload": {
+        "psr-4": {
+            "": [
+                "src/"
+            ]
+        },
+        "files": [
+            "src/conexao.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Tobias FS",
+            "email": "tobias.fs404@gmail.com"
+        }
+    ],
+    "require": {},
+    "scripts": {
+        "dev": "php -S localhost:8080"
+    }
+}
