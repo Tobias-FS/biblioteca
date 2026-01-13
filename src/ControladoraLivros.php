@@ -30,8 +30,39 @@ class ControladoraLivros {
     }
 
     public function adicionar() {
-        $dados = $this->visao->dados();
+        $dados = $this->visao->obterDados();
+        
+        try {
+            $livro = $this->instanciarLivro( $dados );
+            
+            $id = $this->repositorio->salvar( $livro );
+            if ( ! $id ) {
+                $this->visao->exibirMensagem( 'Erro ao cadastrar livro', 400 );
+            }
+            $this->visao->exibirCadatradoComSucesso();
+        } catch( RepositorioException $e ) {
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
+        }
+    } 
 
+    public function atualizar( $id ) {
+        $dados = $this->visao->obterDados();
+        
+        try {
+            $this->repositorio->existeComId( $id );
+
+            $livro = $this->instanciarLivro( $dados );
+
+            $this->repositorio->alterar( $id, $livro );
+            $this->visao->exibirAtualizadoComSucesso();
+        } catch ( RepositorioException $e ) {
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
+        } catch ( DominioException $e ) {
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
+        }
+    }
+
+    private function instanciarLivro( $dados ) {
         $livro = new Livro( 
             0,
             $dados[ 'codigo' ],
@@ -46,18 +77,10 @@ class ControladoraLivros {
         $problemas = $livro->validar();
 
         if ( $problemas ) {
-            $this->visao->exibirMensagem( $problemas, 400 );
+            throw new DominioException( "$problemas", 400 );
             return;
         }
 
-        try {
-            $id = $this->repositorio->salvar( $livro );
-            if ( ! $id ) {
-                $this->visao->exibirMensagem( 'Erro ao cadastrar livro', 400 );
-            }
-            $this->visao->exibirCadatradoComSucesso();
-        } catch( RepositorioException $e ) {
-            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
-        }
-    } 
+        return $livro;
+    }
 }

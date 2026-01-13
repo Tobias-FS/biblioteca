@@ -25,7 +25,9 @@ if ( $metodo == 'POST' && preg_match( $regexUrl, $url ) ) {
 } else if ( $metodo == 'GET' && preg_match( $regexUrl, $url ) ) {
     $controladora->obter();
 } else if ( $metodo == 'GET' && preg_match( $regexUrlComID, $url, $casamentos ) ) {
-    error_log( print_r( $casamentos, true ) );
     [ , $id ] = $casamentos;
     $controladora->obterComId( $id );
+} else if ( $metodo == 'PUT' && preg_match( $regexUrlComID, $url, $casamentos ) ) {
+    [ , $id ] = $casamentos;
+    $controladora->atualizar( $id );
 }

@@ -2,9 +2,8 @@
 
 class VisaoLivro {
     
-    public function dados() {
+    public function obterDados() {
         $dadosRequisicao = json_decode( file_get_contents( 'php://input' ), true );
-        error_log( print_r( $dadosRequisicao, true ) );
         return $dadosRequisicao;
     }
 
@@ -18,6 +17,12 @@ class VisaoLivro {
         header('Content-Type: application/json');
         http_response_code( 201 );
         echo json_encode( [ 'mensagem' => 'Cadastrado com sucesso.', 'codigo' => 201 ] );
+    }
+
+    public function exibirAtualizadoComSucesso () {
+        header('Content-Type: application/json');
+        http_response_code( 200 );
+        echo json_encode( [ 'mensagem' => 'Atualizado com sucesso.' ] );
     }
 
     public function exibirLivro( $livro ) {

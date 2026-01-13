@@ -62,13 +62,27 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
 
             return $livro;
         } catch ( PDOException $e ) {
+            throw new RepositorioException( "Erro ao listar livro com id $id", 500 );
+        }
+    }
+
+    public function existeComId( $id ) {
+        try {
+            $sql = 'SELECT id FROM livro WHERE id = :id';
+            $ps = $this->pdo->prepare( $sql );
+            $ps->execute( [ 'id' => $id ] );
+            $id = $ps->fetch();
+
+            if ( ! $id ) {
+                throw new RepositorioException( "Livro com id $id não econtrado.", 404 );
+            }
+        } catch ( PDOException $e ) {
             throw new RepositorioException( "Erro ao listar licro com id $id", 500 );
         }
     }
 
     public function salvar( Livro $livro ) {
         try {
-            error_log( print_r( $livro, true ) );
             $sql = 'INSERT INTO livro ( codigo, titulo, autor, ano_publicacao , genero, numero_de_paginas, quantidade )
                         VALUES ( :codigo, :titulo, :autor, :ano_publicacao , :genero, :numero_de_paginas, :quantidade )';
             $ps = $this->pdo->prepare( $sql );
@@ -87,6 +101,29 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
             return $id;
         } catch ( PDOException $e ) {
             throw new RepositorioException( 'Erro ao cadastrar livro. ', 500 );
+        }
+    }
+
+    public function alterar( $id, Livro $livro ) {
+
+        try {
+            $sql = 'UPDATE livro 
+                        SET codigo = :codigo, titulo = :titulo, autor = :autor, ano_publicacao = :ano_publicacao, 
+                            genero = :genero, numero_de_paginas = :numero_de_paginas, quantidade = :quantidade 
+                        WHERE id = :id';
+            $ps = $this->pdo->prepare( $sql );
+            $ps->execute( [
+                'codigo' => $livro->codigo,
+                'titulo' => $livro->titulo, 
+                'autor' => $livro->autor,
+                'ano_publicacao' => $livro->anoPublicacao, 
+                'genero' => $livro->genero,
+                'numero_de_paginas' => $livro->numeroDePaginas,
+                'quantidade' => $livro->quantidade,
+                'id' => $id               
+            ] );
+        } catch ( PDOException $e ) {
+            throw new RepositorioException( "Erro ao atualizar livro com id $id", 500 );
         }
     }
 }
