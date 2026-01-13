@@ -30,4 +30,9 @@ if ( $metodo == 'POST' && preg_match( $regexUrl, $url ) ) {
 } else if ( $metodo == 'PUT' && preg_match( $regexUrlComID, $url, $casamentos ) ) {
     [ , $id ] = $casamentos;
     $controladora->atualizar( $id );
+} else if ( $metodo == 'DELETE' && preg_match( $regexUrlComID, $url, $casamentos ) ) {
+    [ , $id ] = $casamentos;
+    $controladora->excluir( $id );
+} else {
+    $controladora->rotaNaoEncontrada();
 }

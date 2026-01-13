@@ -71,9 +71,9 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
             $sql = 'SELECT id FROM livro WHERE id = :id';
             $ps = $this->pdo->prepare( $sql );
             $ps->execute( [ 'id' => $id ] );
-            $id = $ps->fetch();
+            $resultado = $ps->fetch();
 
-            if ( ! $id ) {
+            if ( ! $resultado ) {
                 throw new RepositorioException( "Livro com id $id não econtrado.", 404 );
             }
         } catch ( PDOException $e ) {
@@ -124,6 +124,16 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
             ] );
         } catch ( PDOException $e ) {
             throw new RepositorioException( "Erro ao atualizar livro com id $id", 500 );
+        }
+    }
+
+    public function remover( $id ) {
+        try {
+            $sql = 'DELETE FROM livro WHERE id = :id';
+            $ps = $this->pdo->prepare( $sql );
+            $ps->execute( [ 'id' => $id ] );
+        } catch ( PDOException $e ) {
+            throw new RepositorioException( "Erro ao remover livro com id $id", 500 );
         }
     }
 }

@@ -62,6 +62,17 @@ class ControladoraLivros {
         }
     }
 
+    public function excluir( $id ) {
+        try {
+            $this->repositorio->existeComId( $id );
+
+            $this->repositorio->remover( $id );
+            $this->visao->exibirRemovidoComSucesso();
+        } catch ( RepositorioException $e ) {
+            $this->visao->exibirMensagem( "Erro ao remover livro com id $id", $e->getCode() );
+        }
+    }
+
     private function instanciarLivro( $dados ) {
         $livro = new Livro( 
             0,
@@ -82,5 +93,9 @@ class ControladoraLivros {
         }
 
         return $livro;
+    }
+
+    public function rotaNaoEncontrada() {
+        $this->visao->exibirErroRotaNaoEncontrada();
     }
 }
