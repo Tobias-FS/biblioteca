@@ -10,6 +10,25 @@ class ControladoraLivros {
         $this->visao = new VisaoLivro();
     }
 
+    public function obter() {
+        try {
+            $livros = $this->repositorio->listar();
+            $this->visao->exibirLivro( $livros );
+        } catch ( RepositorioException $e ) {
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
+        }
+
+    }
+
+    public function obterComId( $id ) {
+        try {
+            $livro = $this->repositorio->listarPeloID( $id );
+            $this->visao->exibirLivro( $livro );
+        } catch ( RepositorioException $e ) {
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
+        }
+    }
+
     public function adicionar() {
         $dados = $this->visao->dados();
 
@@ -28,7 +47,7 @@ class ControladoraLivros {
 
         if ( $problemas ) {
             $this->visao->exibirMensagem( $problemas, 400 );
-            die;
+            return;
         }
 
         try {
@@ -38,7 +57,7 @@ class ControladoraLivros {
             }
             $this->visao->exibirCadatradoComSucesso();
         } catch( RepositorioException $e ) {
-            $this->visao->exibirMensagem( $e->getMessage(), 500 );
+            $this->visao->exibirMensagem( $e->getMessage(), $e->getCode() );
         }
     } 
 }

@@ -15,10 +15,17 @@ try {
 }
 
 $regexUrl = '/^\/livros\/?$/';
-$regexID = '/^\/livros\/[0-9]+\/?$/';
+$regexUrlComID = '/^\/livros\/([0-9]+)\/?$/';
+$casamentos = [];
 
 $controladora = new ControladoraLivros( $pdo );
 
 if ( $metodo == 'POST' && preg_match( $regexUrl, $url ) ) {
     $controladora->adicionar();
+} else if ( $metodo == 'GET' && preg_match( $regexUrl, $url ) ) {
+    $controladora->obter();
+} else if ( $metodo == 'GET' && preg_match( $regexUrlComID, $url, $casamentos ) ) {
+    error_log( print_r( $casamentos, true ) );
+    [ , $id ] = $casamentos;
+    $controladora->obterComId( $id );
 }

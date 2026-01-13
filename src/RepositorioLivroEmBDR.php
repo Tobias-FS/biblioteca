@@ -8,6 +8,64 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
         $this->pdo = $pdo;
     }
 
+    public function listar() {
+        try {
+            $sql = 'SELECT * FROM livro';
+            $ps = $this->pdo->prepare( $sql );
+            $ps->execute();
+            $pesquisa = $ps->fetchAll();
+
+            $livros = [];
+
+            foreach( $pesquisa as $p ) {
+                $livros []= new Livro(
+                    $p[ 'id' ],
+                    $p[ 'codigo' ],
+                    $p[ 'titulo' ],
+                    $p[ 'autor' ],
+                    $p[ 'genero' ],
+                    $p[ 'ano_publicacao' ],
+                    $p[ 'numero_de_paginas' ],
+                    $p[ 'quantidade' ],
+                    $p[ 'cadastrado_em' ],
+                );
+            }
+
+            return $livros;
+        } catch ( PDOException $e ) {
+            throw new RepositorioException( 'Erro ao listar livros', 500 );
+        }
+    }
+
+    public function listarPeloID( $id ) {
+        try {
+            $sql = 'SELECT * FROM livro WHERE id = :id';
+            $ps = $this->pdo->prepare( $sql );
+            $ps->execute( [ 'id' => $id ] );
+            $pesquisa = $ps->fetch();
+
+            if ( ! $pesquisa ) {
+                throw new RepositorioException( "Livro com id $id não econtrado.", 404 );
+            }
+
+            $livro = new Livro(
+                $pesquisa[ 'id' ],
+                $pesquisa[ 'codigo' ],
+                $pesquisa[ 'titulo' ],
+                $pesquisa[ 'autor' ],
+                $pesquisa[ 'genero' ],
+                $pesquisa[ 'ano_publicacao' ],
+                $pesquisa[ 'numero_de_paginas' ],
+                $pesquisa[ 'quantidade' ],
+                $pesquisa[ 'cadastrado_em' ],
+            );
+
+            return $livro;
+        } catch ( PDOException $e ) {
+            throw new RepositorioException( "Erro ao listar licro com id $id", 500 );
+        }
+    }
+
     public function salvar( Livro $livro ) {
         try {
             error_log( print_r( $livro, true ) );
@@ -28,7 +86,7 @@ class RepositorioLivroEmBDR implements RepositorioLivro {
 
             return $id;
         } catch ( PDOException $e ) {
-            throw new RepositorioException( 'Erro ao cadastrar livro. ' );
+            throw new RepositorioException( 'Erro ao cadastrar livro. ', 500 );
         }
     }
 }
